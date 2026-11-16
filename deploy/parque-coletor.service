@@ -1,0 +1,8 @@
+[Unit]
+Description=Fleet coverage collector (AD + RMM + GLPI + antivirus -> InfluxDB)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/parque-coletor/fleet_collector.py

@@ -1,0 +1,779 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_PARQUE",
+      "label": "InfluxDB parque",
+      "description": "Banco parque do coletor do parque",
+      "type": "datasource",
+      "pluginId": "influxdb",
+      "pluginName": "InfluxDB"
+    }
+  ],
+  "__requires": [
+    {
+      "type": "datasource",
+      "id": "influxdb",
+      "name": "InfluxDB",
+      "version": "1.0.0"
+    }
+  ],
+  "uid": "parque-tv",
+  "title": "Parque - TV",
+  "tags": [
+    "parque",
+    "tv"
+  ],
+  "timezone": "browser",
+  "refresh": "5m",
+  "time": {
+    "from": "now-7d",
+    "to": "now"
+  },
+  "timepicker": {
+    "hidden": true
+  },
+  "schemaVersion": 39,
+  "editable": true,
+  "graphTooltip": 0,
+  "panels": [
+    {
+      "id": 1,
+      "type": "text",
+      "title": "",
+      "datasource": null,
+      "transparent": true,
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 14,
+        "h": 2
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "# PARQUE · ESTAÇÕES DO DOMÍNIO\n"
+      }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_PARQUE}"
+      },
+      "transparent": true,
+      "gridPos": {
+        "x": 14,
+        "y": 0,
+        "w": 10,
+        "h": 2
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_PARQUE}"
+          },
+          "query": "SELECT last(\"ativas\") FROM \"parque_geral\" WHERE time > now() - 2h",
+          "rawQuery": true,
+          "resultFormat": "time_series"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/^Time$/",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "wideLayout": true,
+        "text": {
+          "titleSize": 12,
+          "valueSize": 22
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "time:[Atualizado em] DD/MM [às] HH:mm",
+          "noValue": "SEM DADOS",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#5C6773"
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "ESTAÇÕES EM USO",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_PARQUE}"
+      },
+      "transparent": true,
+      "gridPos": {
+        "x": 0,
+        "y": 2,
+        "w": 4,
+        "h": 5
+      },
+      "description": "Estações do domínio com logon nos últimos 30 dias (base de tudo). Embaixo: total de estações no AD.",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_PARQUE}"
+          },
+          "query": "SELECT last(\"ativas\") AS \"EM USO\", last(\"ad_estacoes\") AS \"NO AD\" FROM \"parque_geral\" WHERE time > now() - 30m",
+          "rawQuery": true,
+          "resultFormat": "time_series"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background_solid",
+        "graphMode": "none",
+        "textMode": "value_and_name",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "wideLayout": true,
+        "text": {
+          "titleSize": 13,
+          "valueSize": 34
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "decimals": 0,
+          "noValue": "SEM DADOS",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#3F7FBF"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*EM USO$"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "EM USO"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*NO AD$"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "NO AD"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#5C6773"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 14,
+      "type": "stat",
+      "title": "COMPLETAS (AS 3)",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_PARQUE}"
+      },
+      "transparent": true,
+      "gridPos": {
+        "x": 4,
+        "y": 2,
+        "w": 5,
+        "h": 5
+      },
+      "description": "Estações em uso com Kaspersky, Tactical e GLPI respondendo nos últimos 7 dias.",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_PARQUE}"
+          },
+          "query": "SELECT last(\"pct_completas\") FROM \"parque_geral\" WHERE $timeFilter GROUP BY time(30m) fill(none)",
+          "rawQuery": true,
+          "resultFormat": "time_series"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background_solid",
+        "graphMode": "area",
+        "textMode": "value",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "wideLayout": true,
+        "text": {
+          "titleSize": 14,
+          "valueSize": 44
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "decimals": 0,
+          "min": 0,
+          "max": 100,
+          "noValue": "SEM DADOS",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#D64545",
+                "value": null
+              },
+              {
+                "color": "#D9A441",
+                "value": 85
+              },
+              {
+                "color": "#2E9E6B",
+                "value": 97
+              }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 19,
+      "type": "stat",
+      "title": "KASPERSKY",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_PARQUE}"
+      },
+      "transparent": true,
+      "gridPos": {
+        "x": 9,
+        "y": 2,
+        "w": 5,
+        "h": 5
+      },
+      "description": "Estações em uso com o agente do KSC e o KES falando nos últimos 7 dias.",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_PARQUE}"
+          },
+          "query": "SELECT last(\"pct_kaspersky\") FROM \"parque_geral\" WHERE $timeFilter GROUP BY time(30m) fill(none)",
+          "rawQuery": true,
+          "resultFormat": "time_series"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background_solid",
+        "graphMode": "area",
+        "textMode": "value",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "wideLayout": true,
+        "text": {
+          "titleSize": 14,
+          "valueSize": 44
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "decimals": 0,
+          "min": 0,
+          "max": 100,
+          "noValue": "SEM DADOS",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#D64545",
+                "value": null
+              },
+              {
+                "color": "#D9A441",
+                "value": 85
+              },
+              {
+                "color": "#2E9E6B",
+                "value": 97
+              }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 24,
+      "type": "stat",
+      "title": "TACTICAL",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_PARQUE}"
+      },
+      "transparent": true,
+      "gridPos": {
+        "x": 14,
+        "y": 2,
+        "w": 5,
+        "h": 5
+      },
+      "description": "Estações em uso com o agente do Tactical falando nos últimos 7 dias.",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_PARQUE}"
+          },
+          "query": "SELECT last(\"pct_tactical\") FROM \"parque_geral\" WHERE $timeFilter GROUP BY time(30m) fill(none)",
+          "rawQuery": true,
+          "resultFormat": "time_series"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background_solid",
+        "graphMode": "area",
+        "textMode": "value",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "wideLayout": true,
+        "text": {
+          "titleSize": 14,
+          "valueSize": 44
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "decimals": 0,
+          "min": 0,
+          "max": 100,
+          "noValue": "SEM DADOS",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#D64545",
+                "value": null
+              },
+              {
+                "color": "#D9A441",
+                "value": 85
+              },
+              {
+                "color": "#2E9E6B",
+                "value": 97
+              }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 29,
+      "type": "stat",
+      "title": "GLPI",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_PARQUE}"
+      },
+      "transparent": true,
+      "gridPos": {
+        "x": 19,
+        "y": 2,
+        "w": 5,
+        "h": 5
+      },
+      "description": "Estações em uso com o GLPI Agent mandando inventário nos últimos 7 dias.",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_PARQUE}"
+          },
+          "query": "SELECT last(\"pct_glpi\") FROM \"parque_geral\" WHERE $timeFilter GROUP BY time(30m) fill(none)",
+          "rawQuery": true,
+          "resultFormat": "time_series"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background_solid",
+        "graphMode": "area",
+        "textMode": "value",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "wideLayout": true,
+        "text": {
+          "titleSize": 14,
+          "valueSize": 44
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "decimals": 0,
+          "min": 0,
+          "max": 100,
+          "noValue": "SEM DADOS",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#D64545",
+                "value": null
+              },
+              {
+                "color": "#D9A441",
+                "value": 85
+              },
+              {
+                "color": "#2E9E6B",
+                "value": 97
+              }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 20,
+      "type": "bargauge",
+      "title": "UNIDADES · % COMPLETAS",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_PARQUE}"
+      },
+      "transparent": true,
+      "gridPos": {
+        "x": 0,
+        "y": 7,
+        "w": 9,
+        "h": 14
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_PARQUE}"
+          },
+          "query": "SELECT last(\"pct_completas\") FROM \"parque_unidade\" WHERE time > now() - 30m GROUP BY \"unidade\"",
+          "rawQuery": true,
+          "resultFormat": "time_series",
+          "alias": "$tag_unidade"
+        }
+      ],
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "basic",
+        "showUnfilled": true,
+        "valueMode": "color",
+        "namePlacement": "left",
+        "minVizHeight": 16,
+        "maxVizHeight": 40,
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {
+          "titleSize": 16,
+          "valueSize": 18
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "decimals": 0,
+          "min": 0,
+          "max": 100,
+          "noValue": "-",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#D64545",
+                "value": null
+              },
+              {
+                "color": "#D9A441",
+                "value": 85
+              },
+              {
+                "color": "#2E9E6B",
+                "value": 97
+              }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 21,
+      "type": "table",
+      "title": "PENDÊNCIAS · O QUE FALTA EM CADA MÁQUINA",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_PARQUE}"
+      },
+      "transparent": true,
+      "gridPos": {
+        "x": 9,
+        "y": 7,
+        "w": 15,
+        "h": 14
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_PARQUE}"
+          },
+          "query": "SELECT last(\"qtd\") AS \"QTD\", last(\"maquinas\") AS \"MÁQUINAS\", last(\"ordem\") AS \"ordem\" FROM \"parque_pendencia\" WHERE time > now() - 30m GROUP BY \"motivo\"",
+          "rawQuery": true,
+          "resultFormat": "table"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "filterByValue",
+          "options": {
+            "type": "include",
+            "match": "any",
+            "filters": [
+              {
+                "fieldName": "QTD",
+                "config": {
+                  "id": "greater",
+                  "options": {
+                    "value": 0
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "sort": [
+              {
+                "field": "ordem",
+                "desc": false
+              }
+            ]
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "ordem": true
+            },
+            "renameByName": {
+              "motivo": "PENDÊNCIA"
+            },
+            "indexByName": {
+              "motivo": 0,
+              "QTD": 1,
+              "MÁQUINAS": 2
+            }
+          }
+        }
+      ],
+      "options": {
+        "showHeader": true,
+        "cellHeight": "lg",
+        "footer": {
+          "show": false
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "left",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "noValue": "TUDO CERTO",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#5C6773"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "PENDÊNCIA"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "Sem Kaspersky": {
+                        "text": "SEM KASPERSKY",
+                        "color": "#D64545",
+                        "index": 0
+                      },
+                      "Sem Tactical": {
+                        "text": "SEM TACTICAL",
+                        "color": "#E08A3C",
+                        "index": 1
+                      },
+                      "Sem GLPI": {
+                        "text": "SEM GLPI",
+                        "color": "#D9A441",
+                        "index": 2
+                      },
+                      "Fora do AD (nas ferramentas)": {
+                        "text": "FORA DO AD (NAS FERRAMENTAS)",
+                        "color": "#3F7FBF",
+                        "index": 3
+                      },
+                      "Sem logon no AD > 90 dias": {
+                        "text": "SEM LOGON NO AD > 90 DIAS",
+                        "color": "#5C6773",
+                        "index": 4
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-background",
+                  "mode": "basic"
+                }
+              },
+              {
+                "id": "custom.width",
+                "value": 270
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "QTD"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 70
+              },
+              {
+                "id": "custom.align",
+                "value": "center"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "templating": {
+    "list": []
+  },
+  "annotations": {
+    "list": []
+  }
+}

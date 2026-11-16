@@ -1,0 +1,31 @@
+# /etc/parque-coletor.conf  (chmod 600, root)
+# All sources are READ-ONLY. Use dedicated read-only accounts.
+
+AD_SERVER=dc01.corp.example.com
+AD_USER=svc-fleet@corp.example.com
+AD_PASS=change-me
+AD_BASE=DC=corp,DC=example,DC=com
+
+TACTICAL_URL=https://api.rmm.example.com
+TACTICAL_KEY=change-me
+
+GLPI_URL=https://glpi.example.com/apirest.php
+GLPI_APP_TOKEN=change-me
+GLPI_USER_TOKEN=change-me
+
+# Optional: Kaspersky Security Center (internal user with the Auditor role).
+# Without KSC_URL, antivirus is left out of the coverage calculation.
+#KSC_URL=https://ksc.corp.example.com:13299
+#KSC_USER=grafana-readonly
+#KSC_PASS=change-me
+
+INFLUX_URL=http://127.0.0.1:8086
+INFLUX_DB=parque
+
+# Site codes used in computer names (PREFIX-SITE-NNN), aliases for GLPI entity names, name prefix to hide on the panel
+SITES=HQ,BR01,BR02,BR03
+SITE_ALIASES=matriz=HQ;filial norte=BR01
+HOST_PREFIX=CORP-
+
+DIAS_ATIVO=30
+DIAS_FERRAMENTA=7
