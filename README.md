@@ -1,5 +1,7 @@
 # Fleet Coverage Dashboard
 
+[![tests](https://github.com/bisquilha/fleet-coverage-dashboard/actions/workflows/tests.yml/badge.svg)](https://github.com/bisquilha/fleet-coverage-dashboard/actions/workflows/tests.yml)
+
 > Every computer in the domain should have the RMM agent, the inventory agent and the antivirus. Which ones don't?
 
 A small Python collector that answers that question every 10 minutes. It uses **Active Directory as the source of truth** and joins, by computer name, what three management tools know about each machine:

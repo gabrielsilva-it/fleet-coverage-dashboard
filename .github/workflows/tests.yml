@@ -1,0 +1,23 @@
+name: tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - name: Join and classification logic
+        run: python tests/test_fleet_collector.py
+      - name: Dashboards are generated, not hand-edited
+        run: |
+          mkdir -p /tmp/out
+          python tools/gen_dashboards.py /tmp/out
+          cmp /tmp/out/dashboard_fleet_tv.json grafana/dashboard_fleet_tv.json
+          cmp /tmp/out/dashboard_fleet_detail.json grafana/dashboard_fleet_detail.json
