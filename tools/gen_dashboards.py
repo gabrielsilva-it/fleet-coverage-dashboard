@@ -192,7 +192,7 @@ detalhe = montar('parque-detalhe', 'Parque - Detalhe',
 if __name__ == '__main__':
     pasta = sys.argv[1] if len(sys.argv) > 1 else os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'grafana')
     for nome, d in (('dashboard_fleet_tv.json', tv), ('dashboard_fleet_detail.json', detalhe)):
-        with open(os.path.join(pasta, nome), 'w', encoding='utf-8') as f:
+        with open(os.path.join(pasta, nome), 'w', encoding='utf-8', newline='\n') as f:
             json.dump(d, f, ensure_ascii=False, indent=2)
         print('gerado:', nome, '|', len(d['panels']), 'painéis | altura',
               max(p['gridPos']['y'] + p['gridPos']['h'] for p in d['panels']))
