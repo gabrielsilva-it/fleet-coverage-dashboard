@@ -22,6 +22,18 @@ Built and running in production at a multi-site company. This is a generic, sani
 
 ---
 
+## Screenshots
+
+Demo data (fictitious sites, machines and users), written to InfluxDB by the collector's own join logic.
+
+**TV dashboard:** coverage per tool and per site, and what each machine is missing.
+
+![Fleet coverage TV dashboard](docs/screenshots/fleet-tv.jpg)
+
+**Detail dashboard (IT only):** one row per machine.
+
+![Fleet coverage detail dashboard](docs/screenshots/fleet-detail.jpg)
+
 ## How a machine is classified
 
 ```mermaid
