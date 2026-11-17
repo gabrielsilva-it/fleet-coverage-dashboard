@@ -1,6 +1,6 @@
 # Fleet Coverage Dashboard
 
-[![tests](https://github.com/bisquilha/fleet-coverage-dashboard/actions/workflows/tests.yml/badge.svg)](https://github.com/bisquilha/fleet-coverage-dashboard/actions/workflows/tests.yml)
+[![tests](https://github.com/gabrielsilva-it/fleet-coverage-dashboard/actions/workflows/tests.yml/badge.svg)](https://github.com/gabrielsilva-it/fleet-coverage-dashboard/actions/workflows/tests.yml)
 
 > Every computer in the domain should have the RMM agent, the inventory agent and the antivirus. Which ones don't?
 
